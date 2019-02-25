@@ -1,14 +1,15 @@
 const Controller = require('./Controller');
-
+const Contants = require('../Util/Contants');
 class Agrobase extends Controller {
     constructor() {
         super();
     }
 
-    async getJobs() {
+    async getJobs(config = {}) {
+        const {jobType = Contants.AMBIENTAL_ENGINEER_AGROBASE, page = 3} = config;
         var arr = []
 
-        const html = await this.RequestPromise('https://www.agrobase.com.br/oportunidades/vagas/emprego-nutricionista/?tag=pernambuco');
+        const html = await this.RequestPromise(`https://www.agrobase.com.br/oportunidades/vagas/${jobType}/page/${page}/?tag=pernambuco`);
             const $ = this.Cheerio.load(html);
             const header = $('div.term-title');
             const jobs = $('div.post-template.post-t4.even');

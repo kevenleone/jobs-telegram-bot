@@ -1,7 +1,7 @@
 const Telegraf = require('telegraf');
 const axios = require('axios');
 const Core = require('./Core');
-
+const Contants = require('../Util/Contants');
 const ENV = process.env;
 class Telegram extends Core {
 
@@ -23,17 +23,27 @@ class Telegram extends Core {
         return txt.substring(0, size)+'...';
     }
 
+    async getJob(config){
+        let jobs = await this.Agrobase.getJobs({jobType: Contants.AMBIENTAL_ENGINEER_AGROBASE, page: 0});
+        return jobs;
+    }
+
+    sendJobs(jobs, ctx){
+        if(!jobs.length) this.reply(ctx, "Nenhum dado encontrado!");
+
+        jobs.forEach(job => {
+            this.reply(ctx, job);
+         });
+    }
+
     run(){
         console.log('Running!', ENV.TELEGRAM_TOKEN)
         const bot = new Telegraf(ENV.TELEGRAM_TOKEN)
         bot.start((ctx) => {
             const {first_name, last_name} = ctx.message.from;
-            this.reply(ctx, `Hello *${first_name} ${last_name}* Welcome to MercaWin Jobs ! Available Commands: /jobs`)
+            this.reply(ctx, `Olá *${first_name} ${last_name}* Bem vindo ao MercaWin Jobs ! Comandos Disponíveis: \n*/jobs* \n*/agrobase*`)
         })
-        // bot.help((ctx) => ctx.reply('Send me a sticker'))
-        // bot.on('sticker', (ctx) => ctx.reply('👍'))
-        // bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-
+      
         bot.command('/jobs', async (ctx) => {
             const {first_name} = ctx.message.from;
             const {text} = ctx.message;
@@ -53,17 +63,46 @@ class Telegram extends Core {
             }
         });
 
-        bot.command('/f', async (ctx) => {
-          let jobs = await this.Agrobase.getJobs();
+        bot.command('/agrobase', async (ctx) => {
+            let page = 1;
+            const {text} = ctx.message;
+            const {first_name} = ctx.message.from;
+            const availableJobs = [
+            {
+                name: "1) Engenheiro Ambiental",
+                type: Contants.AMBIENTAL_ENGINEER_AGROBASE
+            },{
+                name: "2) Engenheiro Florestal",
+                type: Contants.FLORESTAL_ENGINEER_AGROBASE
+            }, {
+                name: "3) Nutricionista",
+                type: Contants.NUTRICIONIST_AGROBASE
+            }];
+            if(text.split(' ').length <= 1){
+                this.reply(ctx,`${first_name} estes são os cargos disponíveis para consulta: \n1) Engenheiro Ambiental \n2) Engenharia Florestal \n3) Nutricionista`);
+                this.reply(ctx, `Antes de começarmos diga o que busca neste formato: */agrobase 1, 2 ou 3*`);
+            } else {
+                const data = text.split(' ');
+                const opt = data[1]-1;
+
+                this.reply(ctx, `Você escolheu *${availableJobs[opt].name}*`);
+                this.reply(ctx, `Página de Consulta ${page}`);
+                let jobs = await this.Agrobase.getJobs({jobType: availableJobs[opt].type, page});
+                this.sendJobs(jobs, ctx);
     
-        //   console.log(jobs.length);
+                bot.command('/mais', async ctx => {
+                    page++;
+                    this.reply(ctx, `Página de Consulta ${page}`);
+                    let jobs = await this.Agrobase.getJobs({jobType: availableJobs[opt].type, page});
+                    this.sendJobs(jobs, ctx);
+                });
+    
+                this.reply(ctx, "Digite */mais* para receber mais empregos");
+            }
+            
+        });
 
-          jobs.forEach(job => {
-              this.reply(ctx, job);
-          })
-        })
-
-        bot.launch()
+        bot.launch();
     }
 
 }
