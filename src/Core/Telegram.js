@@ -1,10 +1,12 @@
 const Telegraf = require('telegraf');
 const axios = require('axios');
+const Core = require('./Core');
 
 const ENV = process.env;
-class Telegram {
+class Telegram extends Core {
 
     constructor(){
+        super();
         this.extra = {
             parse_mode: "Markdown"
         }
@@ -19,10 +21,6 @@ class Telegram {
         let txt = txtf.replace(/<[^>]*>/g, "");
         let size = txt.lenght >= 2000 ? txt.length/2 : limit;
         return txt.substring(0, size)+'...';
-    }
-
-    getData(){
-
     }
 
     run(){
@@ -54,6 +52,16 @@ class Telegram {
                 ctx.reply('Want More? Type /More')
             }
         });
+
+        bot.command('/f', async (ctx) => {
+          let jobs = await this.Agrobase.getJobs();
+    
+        //   console.log(jobs.length);
+
+          jobs.forEach(job => {
+              this.reply(ctx, job);
+          })
+        })
 
         bot.launch()
     }
