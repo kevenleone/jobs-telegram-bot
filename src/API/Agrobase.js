@@ -21,7 +21,8 @@ class Agrobase extends Controller {
                 const salary = jobElement.find('.ico16-salario').text();
                 const company = jobElement.find('.ico16-empresa').text();
                 const description = jobElement.find('p').text();
-                arr.push(this.JobTemplate({title, city, salary, company, description, link}));
+                const date = `${jobElement.find('div.post-date').children('h2').text()} ${jobElement.find('div.post-date').children('span').text()}`
+                arr.push(this.JobTemplate({title, city, salary, company, description, link, date}));
             });
         return arr;
     }

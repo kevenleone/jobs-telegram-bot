@@ -18,8 +18,9 @@ class Controller {
     }
 
     JobTemplate(job){
-        const { title, description, salary = "Não informado", city = "Não informado", company, date, link = 'Não informado'} = job;
-        return `*Título:* ${title} \n*Empresa:* ${company}. \n*Cidade:* ${city} \n*Descrição:* ${this.brief(description, 300)} \n*Salário*: ${salary} \n*Link:* ${link}`;
+        const idk = 'Não informado'
+        const { title, description, salary = idk, city = idk, company, date = idk, link = idk} = job;
+        return `*Título:* ${title} \n*Empresa:* ${company}. \n*Cidade:* ${city} \n*Descrição:* ${this.brief(description, 300)} \n*Salário*: ${salary} \n*Data:* ${date} \n*Link:* ${link}`;
     }
 }
 
