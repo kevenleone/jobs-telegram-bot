@@ -24,6 +24,7 @@ const Resolvers = {
       const jobs = await JobModel.find(query)
         .lean()
         .limit(20)
+      console.log(jobs)
       return jobs
     }
   }

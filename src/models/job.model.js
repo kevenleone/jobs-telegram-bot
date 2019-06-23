@@ -21,7 +21,7 @@ const JobSchema = new Schema({
     requirements: [String],
     responsabilities: [String]
   },
-  date: String,
+  date: Date,
   database: String
 })
 

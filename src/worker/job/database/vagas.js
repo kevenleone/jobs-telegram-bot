@@ -1,10 +1,10 @@
 const worker = require('../../worker')
 
 class VagasJob extends worker {
-  async getJobs (page) {
-    const jobType = 'emprego-engenharia-ambiental'
-    const html = await this.Request(`https://www.vagas.com.br/vagas-de-Engenheiro-Ambiental`)
+  async getJobs (job, page = 0, paginate = true) {
+    const html = await this.Request(`https://www.vagas.com.br/${job}?ordenar_por=mais_recentes&pagina=${page}`)
     const $ = this.Cheerio.load(html)
+    const totalVanancy = $('div#todasVagas ul').children('li').length
     $('div#todasVagas ul').children('li').each(async (i, el) => {
       const li = $(el)
       const data = {
@@ -20,14 +20,17 @@ class VagasJob extends worker {
           job: li.find('h2').children('a').attr('title')
         },
         city: li.find('span.vaga-local').text().trim(),
-        date: li.find('span.icon-relogio-24.data-publicacao').text().trim(),
+        date: this.formatDate(li.find('span.icon-relogio-24.data-publicacao').text().trim()),
         database: 'vagas.com'
       }
-
       await this.getJobDetail(data)
-
-      console.log(data)
+      await this.JobModel.create(data)
     })
+    console.log(`Running page: ${page} total vanancy: ${totalVanancy} | searching on ${job}`)
+    const showMore = $('a.btMaisVagas').text().trim()
+    if (showMore && paginate) {
+      await this.getJobs(job, page + 1)
+    }
   }
 
   async getJobDetail (data) {
@@ -37,11 +40,9 @@ class VagasJob extends worker {
     data.job.salary = this.formatText($('div.infoVaga ul.clearfix').children('li').first().text())
     data.job.description = this.formatText($('div.texto').text())
     $('article.vaga').find('ul').last().children('li').each((indx, el) => {
-      data.company.benefits.push($(el).text().trim())
+      data.company.benefits.push(this.formatText($(el).text()))
     })
   }
 }
 
-const Job = new VagasJob()
-// Job.getJobDetail()
-Job.getJobs()
+module.exports = new VagasJob()
