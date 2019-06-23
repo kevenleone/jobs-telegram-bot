@@ -1,12 +1,19 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const Telegram = require('../src/Core/Telegram');
-require('dotenv').config();
-const server = express();
+const express = require('express')
+const bodyParser = require('body-parser')
+const Telegram = require('../src/Core/Telegram')
+const typeDefs = require('../src/graphql/modules/jobs/typeDefs')
+const resolvers = require('../src/graphql/modules/jobs/resolvers')
 
-server.use(bodyParser.urlencoded({extended: true}));
-server.use(bodyParser.json());
+const app = express()
+const { ApolloServer } = require('apollo-server-express')
+require('dotenv').config()
 
-Telegram.run();
+const server = new ApolloServer({ typeDefs, resolvers })
+server.applyMiddleware({ app })
 
-module.exports = server;
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+
+// Telegram.run();
+
+module.exports = app
