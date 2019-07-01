@@ -1,10 +1,10 @@
 module.exports = {
-  AGROBASE: {
+  AGROBASE_DOTCOM: {
     AMBIENTAL_ENGINEER: 'emprego-engenharia-ambiental',
     FLORESTAL_ENGINEER: 'emprego-engenharia-florestal',
     NUTRICIONIST: 'emprego-nutricionista'
   },
-  VAGAS: {
+  VAGAS_DOTCOM: {
     ENGINEER: {
       AMBIENTAL_ANALYIST: 'vagas-de-analista-ambiental',
       AMBIENTAL_ENGINEER: 'vagas-de-engenheiro-ambiental',

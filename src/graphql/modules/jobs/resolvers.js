@@ -1,33 +1,32 @@
 const JobModel = require('../../../models/job.model')
 
-function deleteEmptyArguments (query) {
-  Object.keys(query).forEach(key => {
-    if (!query[key]) {
-      delete query[key]
-    } else {
-      const value = query[key]
-      const valueInRegex = new RegExp(value, 'i')
-      query[key] = valueInRegex
-    }
-  })
-}
-
-const Resolvers = {
-  Query: {
-    hello: () => 'Hello world Papa!',
-    Jobs: async (obj, args) => {
-      const { title } = args
-      const query = {
-        title
+class JobResolver {
+  deleteEmptyArguments (query) {
+    Object.keys(query).forEach(key => {
+      if (!query[key]) {
+        delete query[key]
+      } else {
+        const value = query[key]
+        const valueInRegex = new RegExp(value, 'i')
+        query[key] = valueInRegex
       }
-      deleteEmptyArguments(query)
-      const jobs = await JobModel.find(query)
-        .lean()
-        .limit(20)
-      console.log(jobs)
-      return jobs
+    })
+  }
+
+  Resolver () {
+    return {
+      Query: {
+        hello: () => 'Hello world !',
+        Jobs: async (obj, args) => {
+          this.deleteEmptyArguments(args)
+          const jobs = await JobModel.find(args)
+            .lean()
+            .limit(20)
+          return jobs
+        }
+      }
     }
   }
 }
 
-module.exports = Resolvers
+module.exports = new JobResolver()

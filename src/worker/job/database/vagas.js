@@ -2,34 +2,40 @@ const worker = require('../../worker')
 
 class VagasJob extends worker {
   async getJobs (job, page = 0, paginate = true) {
-    const html = await this.Request(`https://www.vagas.com.br/${job}?ordenar_por=mais_recentes&pagina=${page}`)
-    const $ = this.Cheerio.load(html)
-    const totalVanancy = $('div#todasVagas ul').children('li').length
-    $('div#todasVagas ul').children('li').each(async (i, el) => {
-      const li = $(el)
-      const data = {
-        title: li.find('h2').children('a').attr('title'),
-        link: `${this.Vagas.baseUrl}${li.find('h2').children('a').attr('href')}`,
-        company: {
-          name: li.find('span.emprVaga').text().trim(),
-          logo: li.find('figure').children('img').attr('src'),
-          benefits: []
-        },
-        job: {
-          career: li.find('span.nivelVaga').text().trim(),
-          job: li.find('h2').children('a').attr('title')
-        },
-        city: li.find('span.vaga-local').text().trim(),
-        date: this.formatDate(li.find('span.icon-relogio-24.data-publicacao').text().trim()),
-        database: 'vagas.com'
+    try {
+      const html = await this.Request(`https://www.vagas.com.br/${job}?ordenar_por=mais_recentes&pagina=${page}`)
+      const $ = this.Cheerio.load(html)
+      const nextPage = $('a.btMaisVagas').text().trim()
+      const totalVanancy = $('div#todasVagas ul').children('li').length
+      $('div#todasVagas ul').children('li').each(async (i, el) => {
+        const li = $(el)
+        const data = {
+          title: li.find('h2').children('a').attr('title'),
+          link: `${this.Vagas.baseUrl}${li.find('h2').children('a').attr('href')}`,
+          searchKey: job,
+          company: {
+            name: li.find('span.emprVaga').text().trim(),
+            logo: li.find('figure').children('img').attr('src'),
+            benefits: []
+          },
+          job: {
+            career: li.find('span.nivelVaga').text().trim(),
+            job: li.find('h2').children('a').attr('title'),
+            salary: {}
+          },
+          city: li.find('span.vaga-local').text().trim(),
+          date: this.formatDate(li.find('span.icon-relogio-24.data-publicacao').text().trim()),
+          database: 'vagas.com'
+        }
+        await this.getJobDetail(data)
+        await this.JobModel.create(data)
+      })
+      console.log(`Running page: ${page} total vanancy: ${totalVanancy} | nextPage: ${!!nextPage} | searching on ${job}`)
+      if (nextPage && paginate) {
+        await this.getJobs(job, page + 1, paginate)
       }
-      await this.getJobDetail(data)
-      await this.JobModel.create(data)
-    })
-    console.log(`Running page: ${page} total vanancy: ${totalVanancy} | searching on ${job}`)
-    const showMore = $('a.btMaisVagas').text().trim()
-    if (showMore && paginate) {
-      await this.getJobs(job, page + 1)
+    } catch (e) {
+      console.log('Error...', e)
     }
   }
 
@@ -37,7 +43,7 @@ class VagasJob extends worker {
     const html = await this.Request(data.link)
     const $ = this.Cheerio.load(html)
     data.company.about = $('div.apresentacao-empresa').text().trim()
-    data.job.salary = this.formatText($('div.infoVaga ul.clearfix').children('li').first().text())
+    data.job.salary.original = this.formatText($('div.infoVaga ul.clearfix').children('li').first().text())
     data.job.description = this.formatText($('div.texto').text())
     $('article.vaga').find('ul').last().children('li').each((indx, el) => {
       data.company.benefits.push(this.formatText($(el).text()))

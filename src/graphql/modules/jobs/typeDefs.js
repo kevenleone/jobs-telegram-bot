@@ -1,30 +1,40 @@
 const { gql } = require('apollo-server-express')
 
 module.exports = gql`
-    type Query {
-        hello: String
-        Jobs(title: String): [Jobs]
-    }
-
     type Jobs {
         title: String
         link: String
         city: String
         date: String
-        database: String
-        company: Company,
+        company: Company
         job: Job
+        until: String
+        searchKey: String
+        database: String
     }
 
     type Job {
-        career: String
         job: String
-        salary: String
-        description: String
-        contract: String
         apply: String
+        career: String
+        salary: Salary
+        journey: String
+        remote: Boolean
+        skills: [String]
+        contract: String
+        description: String
+        formation: [String]
+        locations: [String]
+        frameworks: [String]
+        experience: [String]
         requirements: [String]
         responsabilities: [String]
+    }
+
+    type Salary {
+        original: String
+        salary_start: String
+        salary_final: String
     }
 
     type Company {
@@ -32,5 +42,9 @@ module.exports = gql`
         logo: String
         about: String
         benefits: [String]
+        phone: String
+        company_type: String
+        website: String
+        business_area: String
     }
 `
