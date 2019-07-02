@@ -1,6 +1,14 @@
 const { gql } = require('apollo-server-express')
 
 module.exports = gql`
+    type findJobs {
+        pageIndex: Int
+        pageSize: Int
+        maxResults: Int
+        limit: Int
+        Jobs: [Jobs]
+    }
+
     type Jobs {
         title: String
         link: String
