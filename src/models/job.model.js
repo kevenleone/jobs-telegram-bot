@@ -4,7 +4,6 @@ const Schema = mongoose.Schema
 const JobSchema = new Schema({
   title: String,
   link: String,
-  city: String,
   company: {
     name: String,
     logo: String,
@@ -13,7 +12,20 @@ const JobSchema = new Schema({
     phone: String,
     company_type: String,
     website: String,
-    business_area: String
+    business_area: String,
+    location: {
+      number: Number,
+      country: { type: String, default: 'Brasil' },
+      address: String,
+      city: String,
+      neighborhood: String,
+      state: String,
+      zip_code: String,
+      geolocation: {
+        lng: Number,
+        lat: Number
+      }
+    }
   },
   job: {
     career: String,

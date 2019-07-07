@@ -1,6 +1,9 @@
+const versionModel = require('../../../../models/version.model')
+
 class IndexController {
-  test (req, res, next) {
-    res.send('o i')
+  async test (req, res, next) {
+    const versions = await versionModel.find()
+    res.send({ versions })
   }
 }
 

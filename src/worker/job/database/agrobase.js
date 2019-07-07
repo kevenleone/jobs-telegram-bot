@@ -16,9 +16,11 @@ class JobAgrobase extends worker {
         searchKey: jobType,
         title: jobElement.find('h3.post-title').text(),
         link: jobElement.find('h3.post-title').children('a').attr('href'),
-        city: jobElement.find('.ico16-local').text(),
         database: 'agrobase',
         company: {
+          location: {
+            city: jobElement.find('.ico16-local').text()
+          },
           name: jobElement.find('.ico16-empresa').text(),
           about: jobElement.find('p').text()
         },

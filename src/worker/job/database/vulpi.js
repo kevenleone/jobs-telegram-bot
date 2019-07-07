@@ -12,6 +12,9 @@ class Vulpi extends worker {
           database: 'vulpi',
           link: `${baseUrl}/${trading_name.toLowerCase()}/${id}`,
           company: {
+            location: {
+              city: this.formatArrToString(locations)
+            },
             name: company_name || trading_name,
             logo,
             about: description,

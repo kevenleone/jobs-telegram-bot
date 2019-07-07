@@ -9,18 +9,6 @@ module.exports = gql`
         Jobs: [Jobs]
     }
 
-    type Jobs {
-        title: String
-        link: String
-        city: String
-        date: String
-        company: Company
-        job: Job
-        until: String
-        searchKey: String
-        database: String
-    }
-
     type Job {
         job: String
         apply: String
@@ -39,10 +27,15 @@ module.exports = gql`
         responsabilities: [String]
     }
 
-    type Salary {
-        original: String
-        salary_start: String
-        salary_final: String
+    type Jobs {
+        title: String
+        link: String
+        date: String
+        company: Company
+        job: Job
+        until: String
+        searchKey: String
+        database: String
     }
 
     type Company {
@@ -54,5 +47,28 @@ module.exports = gql`
         company_type: String
         website: String
         business_area: String
+        location: Location
+    }
+
+    type Geolocation {
+        lng: String
+        lat: String
+    }
+
+    type Location {
+        number: Int
+        country: String
+        address: String
+        city: String
+        neighborhood: String
+        state: String
+        zip_code: String
+        geolocation: Geolocation
+    }
+
+    type Salary {
+        original: String
+        salary_start: String
+        salary_final: String
     }
 `

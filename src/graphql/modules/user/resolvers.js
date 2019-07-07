@@ -5,10 +5,10 @@ class UserResolver extends Controller {
   Resolver () {
     return {
       Query: {
-        Authenticate: async (obj, { email, password }) => {
-          const hasEmail = await UserModel.find({ email }).lean()
-          if (!hasEmail) {
-            const user = await UserModel.find({ email, password }).lean()
+        SignIn: async (obj, { email, password }) => {
+          const hasEmail = await UserModel.findOne({ email }).lean()
+          if (hasEmail) {
+            const user = await UserModel.findOne({ email, password }).lean()
             if (!user) {
               throw new Error(this.messages.USER_INVALID_CREDENTIALS)
             }
@@ -19,7 +19,7 @@ class UserResolver extends Controller {
         }
       },
       Mutation: {
-        CreateUser: async (obj, user) => {
+        SignUp: async (obj, user) => {
           const { email } = user
           const userExists = await UserModel.findOne({ email }).lean()
           if (userExists) {

@@ -14,6 +14,9 @@ class VagasJob extends worker {
           link: `${this.Vagas.baseUrl}${li.find('h2').children('a').attr('href')}`,
           searchKey: job,
           company: {
+            location: {
+              city: li.find('span.vaga-local').text().trim()
+            },
             name: li.find('span.emprVaga').text().trim(),
             logo: li.find('figure').children('img').attr('src'),
             benefits: []
@@ -23,7 +26,6 @@ class VagasJob extends worker {
             job: li.find('h2').children('a').attr('title'),
             salary: {}
           },
-          city: li.find('span.vaga-local').text().trim(),
           date: this.formatDate(li.find('span.icon-relogio-24.data-publicacao').text().trim()),
           database: 'vagas.com'
         }

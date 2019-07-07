@@ -12,5 +12,8 @@ module.exports = {
       ...User.resolvers.Mutation
     }
   },
-  typeDefs: [Schema, Jobs.typeDefs, User.typeDefs]
+  typeDefs: [Schema, Jobs.typeDefs, User.typeDefs],
+  context: ({ req }) => {
+    const { operationName } = req.body
+  }
 }
