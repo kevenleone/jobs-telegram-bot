@@ -1,10 +1,7 @@
-const versionModel = require('../../../../models/version.model')
-
 class IndexController {
   async test (req, res, next) {
-    const versions = await versionModel.find()
-    res.send({ versions })
+    res.send({ test: 'ok' });
   }
 }
 
-module.exports = new IndexController()
+module.exports = new IndexController();
